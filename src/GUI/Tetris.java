@@ -4,11 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+
+import Game.*;
 
 public class Tetris extends JFrame {
 	// JPanel instance variables
@@ -22,46 +26,54 @@ public class Tetris extends JFrame {
 	// instance variables for Game Panel
 	private final int gpCol = 10;
 	private final int gpRow = 20;
-	private final int gpSquare = 25;
-	private final int gpBorder = 10;
+	private final int gpSquare = 30;
+	private final int gpBorder = 15;
 	
 	// instance variables for Info Panel
-	private final int ipWidth = 180;
-	private final int ipNextDisplayHeight = 60;
+	private final int ipBorder = 15;
+	private final int ipSquare = 30;
+	private final int ipRow = 4;
+	private final int ipCol = 5;
 	
 	// instance variables for Control Panel
-	private final int cpHeight = 150;
+	private final int cpHeight = 200;
+	
+	// other
+	boolean paused;
+	boolean restart;
 	
 	public Tetris() {
+		paused = false;
+		restart = false;
 		
 		// set GUI parameters
 		setSize(new Dimension(windowRowSize(), windowColSize()));
 		setTitle("Tetris");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		// create and add game panel
-		gp = new GamePanel(gpCol, gpRow, gpSquare, gpBorder);
-		add(gp, BorderLayout.CENTER);
+		//setResizable(false);
 		
 		// create and add info panel
-		ip = new InfoPanel(ipWidth, ipNextDisplayHeight);
+		ip = new InfoPanel(ipRow, ipCol, ipSquare, ipBorder, ipStart());
 		add(ip, BorderLayout.EAST);
 		
+		// create and add game panel
+		gp = new GamePanel(gpRow, gpCol, gpSquare, gpBorder);
+		add(gp, BorderLayout.CENTER);
+		
 		// create and add control panel
-		cp = new ControlPanel(cpHeight);
+		cp = new ControlPanel(this, cpHeight);
 		add(cp, BorderLayout.SOUTH);
 		
 		// create and set menu
 		menu = createMenuBar();
 		setJMenuBar(menu);
-		
 	}
 	
 	private int windowRowSize() {
 		int size = 0;
 		size += (gpBorder * 2);
 		size += (gpSquare * gpCol);
-		size += ipWidth;
+		size += (2*ipBorder)+(ipSquare*ipCol);
 		return size;
 	}
 	
@@ -71,6 +83,13 @@ public class Tetris extends JFrame {
 		size += (gpSquare * gpRow);
 		size += cpHeight;
 		return size;
+	}
+	
+	private int ipStart() {
+		int start = 0;
+		start += (2 * gpBorder);
+		start += (gpSquare * gpCol);
+		return start;
 	}
 	
 	private JMenuBar createMenuBar() {
@@ -107,11 +126,42 @@ public class Tetris extends JFrame {
 		return file;
 	}
 	
-	
+	public void restartActions() {
+		//remove and kill every JPanel
+		remove(gp);
+		gp = null;
+		remove(ip);
+		ip = null;
+		remove(cp);
+		cp = null;
+		
+		// create and add game panel
+		gp = new GamePanel(gpRow, gpCol, gpSquare, gpBorder);
+		add(gp, BorderLayout.CENTER);
+		
+		// create and add info panel
+		ip = new InfoPanel(ipRow, ipCol, ipSquare, ipBorder, ipStart());
+		add(ip, BorderLayout.EAST);
+		
+		// create and add control panel
+		cp = new ControlPanel(this, cpHeight);
+		add(cp, BorderLayout.SOUTH);
+	}
 	
 	public static void main(String[] args) {
 		Tetris gui = new Tetris();
 		gui.setVisible(true);
+	}
+	
+	public void pauseGame() {
+		if (paused) paused = false;
+		else paused = true;
+		System.out.println("Paused");
+	}
+	
+	public void restartGame() {
+		restart = true;
+		System.out.println("Restart");
 	}
 	
 }
