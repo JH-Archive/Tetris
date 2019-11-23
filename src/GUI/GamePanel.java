@@ -5,6 +5,9 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import Game.Location;
+import Game.Piece;
+
 public class GamePanel extends JPanel {
 	// sizes and dimensions
 	private int row;
@@ -12,24 +15,42 @@ public class GamePanel extends JPanel {
 	private int square;
 	private int border;
 	
+	// starting positions
+	private final int startX;
+	private final int startY;
+	
 	//colors
 	private Color[][] colors;
-	private final Color defaultColor = Color.LIGHT_GRAY;
+	private final Color defaultColor = Color.GRAY;
 	private final Color backgroundColor = Color.BLACK;
 	
-	public GamePanel(int row, int col, int square, int border) {
+	public GamePanel(int row, int col, int square, int border, int startX, int startY) {
 		this.row = row;
 		this.col = col;
 		this.square = square;
 		this.border = border;
+		this.startX = startX;
+		this.startY = startY;
 		
-		// instantiate colors and set all colors to light grey at start
+		// instantiate colors and set all colors to grey at start
 		colors = new Color[row][col];
-		for (Color[] colorRow : colors) {
-			for (Color color : colorRow) {
-				color = defaultColor;
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				colors[i][j] = defaultColor;
 			}
 		}
+	}
+	
+	public void insertPiece(Piece p) {
+		Location[] orientations = p.getPiece();
+		colors[startX][startY] = p.color;
+		
+		for (int i = 0; i < 3; i++) {
+			Location cell = orientations[i];
+			colors[startX+cell.dy][startY+cell.dx] = p.color; 
+		}
+		
+		repaint();
 	}
 	
 	@Override

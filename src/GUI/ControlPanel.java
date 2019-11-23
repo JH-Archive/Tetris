@@ -9,12 +9,13 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import Game.PauseListener;
+import Game.QuitListener;
+import Game.RestartListener;
+
 public class ControlPanel extends JPanel {
 	// sizes and dimensions
 	private int height;
-	
-	// score
-	private int score;
 	
 	// tetris object
 	Tetris t;
@@ -24,65 +25,40 @@ public class ControlPanel extends JPanel {
 	private JButton quitButton;
 	private JButton pauseButton;
 	
-	// JLabel
-	private JLabel scoreLabel;
+	// listeners
+	PauseListener pauser;
+	RestartListener restarter;
+	QuitListener quitter;
 	
-	public ControlPanel(Tetris t, int height) {
+	public ControlPanel(PauseListener pauser, RestartListener restarter, QuitListener quitter, int height) {
+		this.pauser = pauser;
+		this.restarter = restarter;
+		this.quitter = quitter;
+		
 		this.t = t;
 		this.height = height;
-		score = 0;
 		
-		// create buttons and label
+		// create buttons
 		restartButton = new JButton("Restart");
 		quitButton = new JButton("Quit");
 		pauseButton = new JButton("Pause");
-		scoreLabel  = new JLabel("Score: 0");
 		
-		// add buttons and label to JPanel
+		// add buttons to JPanel
 		add(restartButton);
 		add(quitButton);
 		add(pauseButton);
-		add(scoreLabel);
 		
 		// attach buttons to ActionListener classes
-		restartButton.addActionListener(new restartListener());
-		quitButton.addActionListener(new quitListener());
-		pauseButton.addActionListener(new pauseListener());
+		restartButton.addActionListener(restarter);
+		quitButton.addActionListener(quitter);
+		pauseButton.addActionListener(pauser);
 		
 		// set layout
 		setLayout(new GridLayout(2, 2));
 	}
 	
-	public void incrementScore() {
-		score++;
-		scoreLabel.setText("Score: " + Integer.toString(score));
-		repaint();
-	}
-	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-	}
-	
-	public int getScore() {
-		return score;
-	}
-	
-	private class restartListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			t.restartGame();
-		}
-	}
-	
-	private class quitListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			System.exit(0);
-		}
-	}
-	
-	private class pauseListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			t.pauseGame();
-		}
 	}
 
 }

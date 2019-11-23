@@ -1,18 +1,52 @@
 package Game;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class Piece {
 	// type of Piece
-	String orientation;
+	private String orientation;
+	
+	// color of piece
+	public Color color;
 	
 	// locations of all other blocks in piece
 	private Map<String, Location[]> orientations;
 	Location[] thisPiece;
 	
-	public Piece(String orientation) {
-		this.orientation = orientation;
+	// used in random generation of a new Piece
+	public Piece() {
+		String starters[] = {"I1", "O", "L1", "J1", "T1", "S1", "Z1"};
+		int index = (int)(Math.random() * 7);
+		orientation = starters[index];
+		
+		if (orientation == "I1") {
+			color = Color.CYAN;
+		}
+		else if(orientation == "O") {
+			color = Color.YELLOW;
+		}
+		else if(orientation == "L1") {
+			color = Color.ORANGE;
+		}
+		else if(orientation == "J1") {
+			color = Color.getHSBColor(248, 100, 50);
+		}
+		else if(orientation == "T1") {
+			color = Color.MAGENTA;
+		}
+		else if(orientation == "S1") {
+			color = Color.GREEN;
+		}
+		else if(orientation == "Z1") {
+			color = Color.RED;
+		}
+		else {
+			orientation = "I1";
+			color = Color.CYAN;
+		}
 		
 		orientations = createOrientationMap();
 		thisPiece = orientations.get(orientation);

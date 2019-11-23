@@ -12,71 +12,58 @@ public class InfoPanel extends JPanel {
 	/*
 	 * 
 	 * InfoPanel										JPanel
-	 * 		-nextPiece									JPanel
-	 * 				-nextPieceLabel						JLabel
-	 * 				-nextPiecePanel						JPanel
 	 * 		-controls									JPanel
 	 * 				-controlsLabel						JLabel
 	 * 				-controlsText						JTextArea
-	 * 		-highScore									JPanel
-	 * 				-highScoreLabel						JLabel
-	 * 				-highScoresText						JTextArea
+	 * 		-highScore									JLabel
+	 * 		-currentScore								JLabel
 	 * 
 	 */
 	
-	// sizes and dimensions
-	private int row;
-	private int col;
-	private int square;
-	private int border;
-	private int start;
+	// score labels
+	private int score;
+	private int highScore;
+	
+	private JLabel scoreLabel;
+	private JLabel highScoreLabel;
+	
+	private final String scoreString = "Current Score: ";
+	private final String highString = "High Score: ";
 	
 	// labels
 	private final JLabel controlsLabel = new JLabel("Controls:");
-	private final JLabel highScoreLabel = new JLabel("High Score:");
 	
-	// compound JPanels
-	private NextPiece nextPanel;
+	// compound JPanel
 	private JPanel controls;
-	private JPanel highScore;
 	
 	// text Areas
 	private JTextArea controlsText;
-	private JTextArea highScoreText;
 	
-	// locations of NextPiecePanel
-	private int nextPanelX;
-	private int nextPanelY;
-	
-	public InfoPanel(int row, int col, int square, int border, int start) {
-		this.row = row;
-		this.col = col;
-		this.square = square;
-		this.border = border;
-		this.start = start;
+	public InfoPanel(int highScore) {
 		
-		// create and add three JPanels, and add JLabels to each
-		nextPanel = new NextPiece(row, col, square, border, start);
+		// instantiate scores at beginning
+		score = 0;
+		this.highScore = highScore;
+		
+		// create score JLabels
+		scoreLabel = new JLabel(scoreString + "0");
+		highScoreLabel = new JLabel(highString + Integer.toString(highScore));
+		
+		// create and add controls JPanel
 		controls = new JPanel();
-		highScore = new JPanel();
 		controls.add(controlsLabel);
-		highScore.add(highScoreLabel);
 		
-		// create, configure, and add JTextAreas to controls and highScore JPanels
+		// create, configure, and add JTextArea to controls
 		controlsText = createTextArea(5, 10);
-		highScoreText = createTextArea(3, 6);
 		controls.add(controlsText);
-		highScore.add(highScoreText);
 		
 		// set layouts of the three JPanels
-		GridLayout subLayout = new GridLayout(2, 1);
-		controls.setLayout(subLayout);
-		highScore.setLayout(subLayout);
+		controls.setLayout(new GridLayout(2, 1));
 		
-		// add sub JPanels to InfoPanel JPanel
-		add(nextPanel);
+		// add sub JPanels and JLabels to InfoPanel JPanel
 		add(controls);
-		add(highScore);
+		add(scoreLabel);
+		add(highScoreLabel);
 		
 		setLayout(new GridLayout(3, 1));
 	}
@@ -88,9 +75,24 @@ public class InfoPanel extends JPanel {
 		return textArea;
 	}
 	
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		nextPanel.paintComponent(g);
+	public void incrementScore() {
+		// increment score
+		score++;
+		
+		// update high score if needed
+		if (highScore <= score) {
+			highScore = score;
+			highScoreLabel.setText(highString + Integer.toString(highScore));
+		}
+		
+		// change score label text
+		scoreLabel.setText(scoreLabel + Integer.toString(score));
+		
+		repaint();
+	}
+	
+	public int getHighScore() {
+		return highScore;
 	}
 
 }

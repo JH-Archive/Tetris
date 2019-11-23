@@ -15,6 +15,10 @@ import javax.swing.JMenuItem;
 import Game.*;
 
 public class Tetris extends JFrame {
+	
+	// The game runner is what runs the game actions themselves
+	GameRunner master;
+	
 	// JPanel instance variables
 	private GamePanel gp; // creates the actual tetris game visuals
 	private InfoPanel ip; // creates the side bar showing info
@@ -28,52 +32,60 @@ public class Tetris extends JFrame {
 	private final int gpRow = 20;
 	private final int gpSquare = 30;
 	private final int gpBorder = 15;
+	private final int startX = 4;
+	private final int startY = 0;
 	
 	// instance variables for Info Panel
-	private final int ipBorder = 15;
-	private final int ipSquare = 30;
-	private final int ipRow = 4;
-	private final int ipCol = 5;
+	private final int ipWidth = 180;
 	
 	// instance variables for Control Panel
-	private final int cpHeight = 200;
+	private final int cpHeight = 200;		
 	
-	// other
-	boolean paused;
-	boolean restart;
+	// instance variables for Game Control
+	private PauseListener pauser;
+	private RestartListener restarter;
+	private QuitListener quitter;
 	
-	public Tetris() {
-		paused = false;
-		restart = false;
+	// pieces
+	private Piece currentPiece;
+	private Piece nextPiece;
+	
+	public Tetris(PauseListener pauser, RestartListener restarter, QuitListener quitter, int highScore) {
+		
+		this.pauser = pauser;
+		this.restarter = restarter;
+		this.quitter = quitter;
 		
 		// set GUI parameters
 		setSize(new Dimension(windowRowSize(), windowColSize()));
 		setTitle("Tetris");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//setResizable(false);
 		
 		// create and add info panel
-		ip = new InfoPanel(ipRow, ipCol, ipSquare, ipBorder, ipStart());
+		ip = new InfoPanel(highScore);
 		add(ip, BorderLayout.EAST);
 		
 		// create and add game panel
-		gp = new GamePanel(gpRow, gpCol, gpSquare, gpBorder);
+		gp = new GamePanel(gpRow, gpCol, gpSquare, gpBorder, startX, startY);
 		add(gp, BorderLayout.CENTER);
 		
 		// create and add control panel
-		cp = new ControlPanel(this, cpHeight);
+		cp = new ControlPanel(pauser, restarter, quitter, cpHeight);
 		add(cp, BorderLayout.SOUTH);
 		
 		// create and set menu
 		menu = createMenuBar();
 		setJMenuBar(menu);
+		
+		// create original random piece to be first
+		nextPiece = new Piece();
 	}
 	
 	private int windowRowSize() {
 		int size = 0;
 		size += (gpBorder * 2);
 		size += (gpSquare * gpCol);
-		size += (2*ipBorder)+(ipSquare*ipCol);
+		size += ipWidth;
 		return size;
 	}
 	
@@ -85,83 +97,64 @@ public class Tetris extends JFrame {
 		return size;
 	}
 	
-	private int ipStart() {
-		int start = 0;
-		start += (2 * gpBorder);
-		start += (gpSquare * gpCol);
-		return start;
-	}
-	
 	private JMenuBar createMenuBar() {
-		// create menu bar and the file menu
+		// create menu bar and its menu's
 		JMenuBar bar = new JMenuBar();
-		JMenu file = createFileMenu();
+		JMenu fileMenu = createFileMenu();
+		JMenu colorMenu = createColorMenu();
 		
-		// add file menu to the menu bar
-		bar.add(file);
+		// add menu's to menu bar
+		bar.add(fileMenu);
+		bar.add(colorMenu);
 		
-		// return menu bar'
+		// return menu bar
 		return bar;
 	}
 	
 	private JMenu createFileMenu() {
-		// create file menu, and its entry the exit button
-		JMenu file = new JMenu("File");
-		JMenuItem exit = new JMenuItem("Exit");
+		// create file menu
+		JMenu fileMenu = new JMenu("File");
 		
-		// create ActionListener class to define exit item behavior
-		class ExitListener implements ActionListener {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		}
+		// create and add pause option to menu
+		JMenuItem pause = new JMenuItem("Pause");
+		pause.addActionListener(pauser);
+		fileMenu.add(pause);
 		
-		// attach exit item to the ExitListener class
-		exit.addActionListener(new ExitListener());
+		// create and add restart option to menu
+		JMenuItem restart = new JMenuItem("Restart");
+		restart.addActionListener(restarter);
+		fileMenu.add(restart);
 		
-		// add exit menu item to file menu
-		file.add(exit);
+		// create and add quit option to menu
+		JMenuItem exit = new JMenuItem("Quit");
+		exit.addActionListener(quitter);
+		fileMenu.add(exit);
 		
 		// return file menu
-		return file;
+		return fileMenu;
 	}
 	
-	public void restartActions() {
-		//remove and kill every JPanel
-		remove(gp);
-		gp = null;
-		remove(ip);
-		ip = null;
-		remove(cp);
-		cp = null;
+	private JMenu createColorMenu() {
+		// create color menu
+		JMenu colorMenu = new JMenu("Colors");
 		
-		// create and add game panel
-		gp = new GamePanel(gpRow, gpCol, gpSquare, gpBorder);
-		add(gp, BorderLayout.CENTER);
+		// add in development button that does nothing
+		JMenuItem inDev = new JMenuItem("In development");
+		inDev.addActionListener(null);
+		colorMenu.add(inDev);
 		
-		// create and add info panel
-		ip = new InfoPanel(ipRow, ipCol, ipSquare, ipBorder, ipStart());
-		add(ip, BorderLayout.EAST);
-		
-		// create and add control panel
-		cp = new ControlPanel(this, cpHeight);
-		add(cp, BorderLayout.SOUTH);
+		// return color menu
+		return colorMenu;
 	}
 	
-	public static void main(String[] args) {
-		Tetris gui = new Tetris();
-		gui.setVisible(true);
+	public int getHighScore() {
+		return ip.getHighScore();
 	}
 	
-	public void pauseGame() {
-		if (paused) paused = false;
-		else paused = true;
-		System.out.println("Paused");
-	}
-	
-	public void restartGame() {
-		restart = true;
-		System.out.println("Restart");
+	public void insertNextPiece() {
+		currentPiece = nextPiece;
+		nextPiece = new Piece();
+		gp.insertPiece(currentPiece);
 	}
 	
 }
