@@ -5,6 +5,7 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import Game.Direction;
 import Game.Location;
 import Game.Piece;
 
@@ -19,10 +20,17 @@ public class GamePanel extends JPanel {
 	private final int startX;
 	private final int startY;
 	
+	// current positions
+	private int currentX;
+	private int currentY;
+	
 	//colors
 	private Color[][] colors;
 	private final Color defaultColor = Color.GRAY;
 	private final Color backgroundColor = Color.BLACK;
+	
+	// current piece
+	private Piece piece;
 	
 	public GamePanel(int row, int col, int square, int border, int startX, int startY) {
 		this.row = row;
@@ -42,15 +50,234 @@ public class GamePanel extends JPanel {
 	}
 	
 	public void insertPiece(Piece p) {
-		Location[] orientations = p.getPiece();
-		colors[startY][startX] = p.color;
+		
+		piece = p;
+		currentX = startY;
+		currentY = startX;
+		
+		Location[] orientations = piece.getPiece();
+		colors[startY][startX] = piece.color;
 		
 		for (int i = 0; i < 3; i++) {
 			Location cell = orientations[i];
-			colors[startY+cell.dx][startX+cell.dy] = p.color; 
+			colors[startY+cell.dx][startX+cell.dy] = piece.color; 
 		}		
 		
 		repaint();
+	}
+	
+	public boolean movePiece(Direction d) {
+		
+		if (d == Direction.DOWN) {
+			if (moveIsLegal(d)) {
+				// reset colors
+				colors[currentX][currentY] = defaultColor;
+				int x, y;
+				for (int i = 0; i < 3; i++) {
+					x = currentX + piece.getPiece()[i].dx;
+					y = currentY + piece.getPiece()[i].dy;
+					
+					colors[x][y] = defaultColor;
+				}
+				
+				// increment current x
+				currentX++;
+				
+				// set new colors
+				colors[currentX][currentY] = piece.color;
+				for (int i = 0; i < 3; i++) {
+					x = currentX + piece.getPiece()[i].dx;
+					y = currentY + piece.getPiece()[i].dy;
+					
+					colors[x][y] = piece.color;
+				}
+				
+				// repaint
+				repaint();
+				return true;
+			}
+			else {
+				// reset colors
+				colors[currentX][currentY] = defaultColor;
+				int x, y;
+				for (int i = 0; i < 3; i++) {
+					x = currentX + piece.getPiece()[i].dx;
+					y = currentY + piece.getPiece()[i].dy;
+					
+					colors[x][y] = defaultColor;
+				}
+				
+				// change color slightly to promote collisions between the same piece types
+				int newRed = piece.color.getRed();
+				if (newRed + 1 < 256) newRed++;
+				int newGreen = piece.color.getGreen();
+				if (newGreen + 1 < 256) newGreen++;
+				int newBlue = piece.color.getBlue();
+				if (newBlue + 1 < 256) newBlue++;
+				Color newColor = new Color(newRed, newGreen, newBlue);
+				colors[currentX][currentY] = newColor;
+				for (int i = 0; i < 3; i++) {
+					x = currentX + piece.getPiece()[i].dx;
+					y = currentY + piece.getPiece()[i].dy;
+					
+					colors[x][y] = newColor;
+				}
+				
+				// repaint
+				repaint();
+				
+				return false;
+			}
+		}
+		else if (d == Direction.LEFT) {
+			if (moveIsLegal(d)) {
+				// reset colors
+				colors[currentX][currentY] = defaultColor;
+				int x, y;
+				for (int i = 0; i < 3; i++) {
+					x = currentX + piece.getPiece()[i].dx;
+					y = currentY + piece.getPiece()[i].dy;
+					
+					colors[x][y] = defaultColor;
+				}
+				
+				// increment current y
+				currentY--;
+				
+				// set new colors
+				colors[currentX][currentY] = piece.color;
+				for (int i = 0; i < 3; i++) {
+					x = currentX + piece.getPiece()[i].dx;
+					y = currentY + piece.getPiece()[i].dy;
+					
+					colors[x][y] = piece.color;
+				}
+				
+				// repaint
+				repaint();
+				return true;
+			}
+		}
+		else if (d == Direction.RIGHT) {
+			if (moveIsLegal(d)) {
+				// reset colors
+				colors[currentX][currentY] = defaultColor;
+				int x, y;
+				for (int i = 0; i < 3; i++) {
+					x = currentX + piece.getPiece()[i].dx;
+					y = currentY + piece.getPiece()[i].dy;
+					
+					colors[x][y] = defaultColor;
+				}
+				
+				// increment current y
+				currentY++;
+				
+				// set new colors
+				colors[currentX][currentY] = piece.color;
+				for (int i = 0; i < 3; i++) {
+					x = currentX + piece.getPiece()[i].dx;
+					y = currentY + piece.getPiece()[i].dy;
+					
+					colors[x][y] = piece.color;
+				}
+				
+				// repaint
+				repaint();
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean moveIsLegal(Direction d) {
+		boolean legal = true;
+		
+		if (d == Direction.DOWN) {
+			if (currentX + 1 >= row) legal = false;
+			else if ((colors[currentX + 1][currentY] != defaultColor) && (colors[currentX + 1][currentY] != piece.color)) legal = false;
+			
+			int x, y;
+			for (int i = 0; i < 3; i++) {
+				x = currentX + piece.getPiece()[i].dx;
+				
+				if (x + 1 >= row) legal = false;
+				else if ((colors[x + 1][currentY] != defaultColor) && (colors[x + 1][currentY] != piece.color)) legal = false;
+			}
+		}
+		else if (d == Direction.LEFT) {
+			if (currentY == 0) legal = false;
+			else if ((colors[currentX][currentY-1] != defaultColor) && (colors[currentX][currentY-1] != piece.color)) legal = false;
+			
+			int x, y;
+			for (int i = 0; i < 3; i++) {
+				y = currentY + piece.getPiece()[i].dy;
+				
+				if (y-1 < 0) legal = false;
+				else if ((colors[currentX][y - 1] != defaultColor) && (colors[currentX][y - 1] != piece.color)) legal = false;
+			}
+		}
+		else if (d == Direction.RIGHT) {
+			if (currentY + 1 == col) legal = false;
+			else if ((colors[currentX][currentY+1] != defaultColor) && (colors[currentX][currentY+1] != piece.color)) legal = false;
+			
+			int x, y;
+			for (int i = 0; i < 3; i++) {
+				y = currentY + piece.getPiece()[i].dy;
+				
+				if (y+1 >= col) legal = false;
+				else if ((colors[currentX][y + 1] != defaultColor) && (colors[currentX][y + 1] != piece.color)) legal = false;
+			}
+		}
+		
+		return legal;
+	}
+	
+	public void rotate() {
+		if (rotationIsLegal()) {
+			// reset colors
+			colors[currentX][currentY] = defaultColor;
+			int x, y;
+			for (int i = 0; i < 3; i++) {
+				x = currentX + piece.getPiece()[i].dx;
+				y = currentY + piece.getPiece()[i].dy;
+				
+				colors[x][y] = defaultColor;
+			}
+			
+			// rotate piece
+			Piece rotated = piece.rotatedVersion();
+			piece = rotated;
+			
+			// set new colors
+			colors[currentX][currentY] = piece.color;
+			for (int i = 0; i < 3; i++) {
+				x = currentX + piece.getPiece()[i].dx;
+				y = currentY + piece.getPiece()[i].dy;
+				
+				colors[x][y] = piece.color;
+			}
+			
+			// repaint
+			repaint();
+		}
+	}
+	
+	private boolean rotationIsLegal() {
+		Piece rotatedPiece = piece.rotatedVersion();
+		Location[] rotated = rotatedPiece.getPiece();
+		
+		int x, y;
+		for (int i = 0; i < 3; i++) {
+			x = currentX + rotated[i].dx;
+			y = currentY + rotated[i].dy;
+			
+			if (x < 0 || x >= row) return false;
+			if (y < 0 || y >= col) return false;
+			if ((colors[x][y] != defaultColor) && (colors[x][y] != piece.color)) return false;
+		}
+		
+		return true;
 	}
 	
 	@Override

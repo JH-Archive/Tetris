@@ -162,4 +162,29 @@ public class Tetris extends JFrame {
 		gp.insertPiece(currentPiece);
 	}
 	
+	public boolean movePieceDown() {
+		boolean stillMoving = gp.movePiece(Direction.DOWN);
+		if (!stillMoving) {
+			insertNextPiece();
+			return false;
+		}
+		else return true;
+	}
+	
+	public void moveLeft() {
+		boolean throwAway = gp.movePiece(Direction.LEFT);
+	}
+	
+	public void moveRight() {
+		boolean throwAway = gp.movePiece(Direction.RIGHT);
+	}
+	
+	public void rotate() {
+		gp.rotate();
+	}
+	
+	public int getRows() {
+		return gpRow;
+	}
+	
 }

@@ -25,7 +25,10 @@ public class ControlPanel extends JPanel {
 	private JButton restartButton;
 	private JButton quitButton;
 	private JButton pauseButton;
-	private JButton testButton;
+	private JButton testRotate;
+	private JButton testLeft;
+	private JButton testRight;
+	private JButton testDrop;
 	
 	// listeners
 	PauseListener pauser;
@@ -56,9 +59,27 @@ public class ControlPanel extends JPanel {
 		add(pauseButton);
 		
 		if (test) {
-			testButton = new JButton("Test Action");
-			testButton.addActionListener(new testListener());
-			add(testButton);
+			testListener testListen = new testListener();
+			
+			// rotate control
+			testRotate = new JButton("Test Rotate");
+			testRotate.addActionListener(testListen);
+			add(testRotate);
+			
+			// left control
+			testLeft = new JButton("Test Left");
+			testLeft.addActionListener(testListen);
+			add(testLeft);
+						
+			// right control
+			testRight = new JButton("Test Right");
+			testRight.addActionListener(testListen);
+			add(testRight);
+			
+			// drop control
+			testDrop = new JButton("Test Drop");
+			testDrop.addActionListener(testListen);
+			add(testDrop);
 		}
 		
 		// attach buttons to ActionListener classes
@@ -67,7 +88,8 @@ public class ControlPanel extends JPanel {
 		pauseButton.addActionListener(pauser);
 		
 		// set layout
-		setLayout(new GridLayout(2, 2));
+		if (test) setLayout(new GridLayout(3, 3));
+		else setLayout(new GridLayout(2, 2));
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -76,7 +98,10 @@ public class ControlPanel extends JPanel {
 	
 	private class testListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			GameRunner.testAction();
+			if (e.getSource() == testRotate) GameRunner.action(1);
+			else if (e.getSource() == testLeft) GameRunner.action(2);
+			else if (e.getSource() == testRight) GameRunner.action(3);
+			else if (e.getSource() == testDrop) GameRunner.action(4);
 		}
 	}
 
