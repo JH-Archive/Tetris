@@ -7,6 +7,8 @@ import GUI.Tetris;
 
 public class GameRunner {
 	
+	private final static boolean test = true;
+	
 	private final int timing = 1000; //milliseconds
 	private static boolean paused;
 	
@@ -25,7 +27,7 @@ public class GameRunner {
 		restarter = new RestartListener();
 		quitter = new QuitListener();
 		
-		board = new Tetris(pauser, restarter, quitter, 0);
+		board = new Tetris(pauser, restarter, quitter, 0, test);
 		board.setVisible(true);
 		
 		board.insertNextPiece();
@@ -47,7 +49,7 @@ public class GameRunner {
 		int highScore = board.getHighScore();
 		
 		board = null;
-		board = new Tetris(pauser, restarter, quitter, highScore);
+		board = new Tetris(pauser, restarter, quitter, highScore, test);
 		
 		board.setVisible(true);
 		paused = false;
@@ -61,5 +63,10 @@ public class GameRunner {
 		
 		System.out.println("Quitting...");
 		System.exit(0);
+	}
+	
+	public static void testAction() {
+		System.out.println("Testing");
+		board.insertNextPiece();
 	}
 }

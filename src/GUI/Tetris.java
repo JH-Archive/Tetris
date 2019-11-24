@@ -50,11 +50,16 @@ public class Tetris extends JFrame {
 	private Piece currentPiece;
 	private Piece nextPiece;
 	
-	public Tetris(PauseListener pauser, RestartListener restarter, QuitListener quitter, int highScore) {
+	// test mode
+	private final boolean test;
+	
+	public Tetris(	PauseListener pauser, RestartListener restarter, QuitListener quitter, 
+					int highScore, boolean test) {
 		
 		this.pauser = pauser;
 		this.restarter = restarter;
 		this.quitter = quitter;
+		this.test = test;
 		
 		// set GUI parameters
 		setSize(new Dimension(windowRowSize(), windowColSize()));
@@ -70,7 +75,7 @@ public class Tetris extends JFrame {
 		add(gp, BorderLayout.CENTER);
 		
 		// create and add control panel
-		cp = new ControlPanel(pauser, restarter, quitter, cpHeight);
+		cp = new ControlPanel(pauser, restarter, quitter, cpHeight, test);
 		add(cp, BorderLayout.SOUTH);
 		
 		// create and set menu

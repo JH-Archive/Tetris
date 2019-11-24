@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import Game.GameRunner;
 import Game.PauseListener;
 import Game.QuitListener;
 import Game.RestartListener;
@@ -24,19 +25,25 @@ public class ControlPanel extends JPanel {
 	private JButton restartButton;
 	private JButton quitButton;
 	private JButton pauseButton;
+	private JButton testButton;
 	
 	// listeners
 	PauseListener pauser;
 	RestartListener restarter;
 	QuitListener quitter;
 	
-	public ControlPanel(PauseListener pauser, RestartListener restarter, QuitListener quitter, int height) {
+	// test mode
+	private final boolean test;
+	
+	public ControlPanel(PauseListener pauser, RestartListener restarter, QuitListener quitter, 
+						int height, boolean test) {
 		this.pauser = pauser;
 		this.restarter = restarter;
 		this.quitter = quitter;
 		
 		this.t = t;
 		this.height = height;
+		this.test = test;
 		
 		// create buttons
 		restartButton = new JButton("Restart");
@@ -47,6 +54,12 @@ public class ControlPanel extends JPanel {
 		add(restartButton);
 		add(quitButton);
 		add(pauseButton);
+		
+		if (test) {
+			testButton = new JButton("Test Action");
+			testButton.addActionListener(new testListener());
+			add(testButton);
+		}
 		
 		// attach buttons to ActionListener classes
 		restartButton.addActionListener(restarter);
@@ -59,6 +72,12 @@ public class ControlPanel extends JPanel {
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+	}
+	
+	private class testListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			GameRunner.testAction();
+		}
 	}
 
 }

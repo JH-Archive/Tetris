@@ -43,12 +43,12 @@ public class GamePanel extends JPanel {
 	
 	public void insertPiece(Piece p) {
 		Location[] orientations = p.getPiece();
-		colors[startX][startY] = p.color;
+		colors[startY][startX] = p.color;
 		
 		for (int i = 0; i < 3; i++) {
 			Location cell = orientations[i];
-			colors[startX+cell.dy][startY+cell.dx] = p.color; 
-		}
+			colors[startY+cell.dx][startX+cell.dy] = p.color; 
+		}		
 		
 		repaint();
 	}
