@@ -15,7 +15,7 @@ import GUI.Tetris;
 public class GameRunner {
 	
 	// test controls
-	private final static boolean testButton = true;
+	private final static boolean testButton = false;
 	private final static boolean testTime = false;
 	
 	private final static int timing = 500; //milliseconds

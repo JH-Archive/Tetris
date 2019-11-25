@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,6 +67,7 @@ public class Tetris extends JFrame {
 		setSize(new Dimension(windowRowSize(), windowColSize()));
 		setTitle("Tetris");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setFocusable(true);
 		
 		// create and add info panel
 		ip = new InfoPanel(highScore);
@@ -82,8 +85,57 @@ public class Tetris extends JFrame {
 		menu = createMenuBar();
 		setJMenuBar(menu);
 		
+		// add keylistener
+		addKeyListener(new ControlListener());
+		
 		// create original random piece to be first
 		nextPiece = new Piece();
+	}
+	
+	private class ControlListener implements KeyListener {
+		public void keyPressed(KeyEvent e) {
+			
+			// if up arrow pressed
+			if (	e.getKeyCode() == KeyEvent.VK_UP || 
+					e.getKeyCode() == KeyEvent.VK_W) 
+			{
+				GameRunner.action(1);
+				System.out.println("Up detected");
+			}
+			
+			// if down arrow pressed
+			else if (	e.getKeyCode() == KeyEvent.VK_DOWN || 
+						e.getKeyCode() == KeyEvent.VK_S) 
+			{
+				GameRunner.action(4);
+				System.out.println("Down detected");
+			}
+			
+			// if left arrow pressed
+			else if (	e.getKeyCode() == KeyEvent.VK_LEFT || 
+						e.getKeyCode() == KeyEvent.VK_A) 
+			{
+				GameRunner.action(2);
+				System.out.println("Left detected");
+			}
+			
+			// if right arrow pressed
+			else if (	e.getKeyCode() == KeyEvent.VK_RIGHT || 
+						e.getKeyCode() == KeyEvent.VK_D) 
+			{
+				GameRunner.action(3);
+				System.out.println("Right detected");
+			}
+			
+		}
+		
+		public void keyTyped(KeyEvent e) {
+			// do nothing
+		}
+		
+		public void keyReleased(KeyEvent e) {
+			// do nothing
+		}
 	}
 	
 	private int windowRowSize() {
