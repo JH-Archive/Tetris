@@ -33,7 +33,7 @@ public class Piece {
 			color = Color.ORANGE;
 		}
 		else if(orientation == "J1") {
-			color = Color.getHSBColor(248, 100, 50);
+			color = new Color(18, 13, 193);
 		}
 		else if(orientation == "T1") {
 			color = Color.MAGENTA;
@@ -67,7 +67,7 @@ public class Piece {
 			color = Color.ORANGE;
 		}
 		else if(type.equals("J")) {
-			color = Color.getHSBColor(248, 100, 50);
+			color = new Color(18, 13, 193);
 		}
 		else if(type.equals("T")) {
 			color = Color.MAGENTA;
@@ -234,28 +234,28 @@ public class Piece {
 		// J1
 		Location j1[] = new Location[3];
 		j1[0] = new Location(1, 0);
-		j1[1] = new Location(0, 1);
-		j1[2] = new Location(0, 2);
+		j1[1] = new Location(0, -1);
+		j1[2] = new Location(0, -2);
 		map.put("J1", j1);
 		
 		// J2
 		Location j2[] = new Location[3];
-		j2[0] = new Location(-1, 0);
-		j2[1] = new Location(-2, 0);
+		j2[0] = new Location(1, 0);
+		j2[1] = new Location(2, 0);
 		j2[2] = new Location(0, 1);
 		map.put("J2", j2);
 		
 		// J3
 		Location j3[] = new Location[3];
 		j3[0] = new Location(-1, 0);
-		j3[1] = new Location(0, -1);
-		j3[2] = new Location(0, -2);
+		j3[1] = new Location(0, 1);
+		j3[2] = new Location(0, 2);
 		map.put("J3", j3);
 		
 		// J4
 		Location j4[] = new Location[3];
-		j4[0] = new Location(1, 0);
-		j4[1] = new Location(2, 0);
+		j4[0] = new Location(-1, 0);
+		j4[1] = new Location(-2, 0);
 		j4[2] = new Location(0, -1);
 		map.put("J4", j4);
 		

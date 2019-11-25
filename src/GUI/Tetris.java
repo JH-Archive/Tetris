@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import Game.*;
 
@@ -127,6 +128,12 @@ public class Tetris extends JFrame {
 				System.out.println("Right detected");
 			}
 			
+			// if p key pressed
+			else if (e.getKeyCode() == KeyEvent.VK_P) 
+			{
+				GameRunner.pause();
+			}
+			
 		}
 		
 		public void keyTyped(KeyEvent e) {
@@ -237,6 +244,25 @@ public class Tetris extends JFrame {
 	
 	public int getRows() {
 		return gpRow;
+	}
+	
+	public void gameOver() {
+		
+		// display game over message
+		JOptionPane.showMessageDialog(this, "Game Over");
+		
+		// display final score
+		JOptionPane.showMessageDialog(this, "Your Score: " + Integer.toString(ip.getScore()));
+		
+		// ask if they want to continue
+		int ready = JOptionPane.showConfirmDialog(this,  "Would you like to play again?");
+		if (ready == JOptionPane.YES_OPTION) {
+			GameRunner.restart();
+		}
+		else {
+			GameRunner.quit();
+		}
+		
 	}
 	
 }

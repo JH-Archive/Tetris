@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
@@ -18,11 +19,14 @@ public class GameRunner {
 	private final static boolean testButton = false;
 	private final static boolean testTime = false;
 	
-	private final static int timing = 500; //milliseconds
+	private static int currentTiming; //milliseconds
+	private static final int timing = 500;
 	private static Timer time;
-	private static Timer fast;
+	private static final double speedMultiplier = 0.95;
+	
 	private static boolean paused;
 	private static boolean dropped;
+	private static boolean gameEnd;
 	
 	private static PauseListener pauser;
 	private static RestartListener restarter;
@@ -32,9 +36,13 @@ public class GameRunner {
 	
 	public static void main(String[] args) {
 		
+		// instantiate currentTiming
+		currentTiming = timing;
+		
 		// control state
 		paused = false;
 		dropped = false;
+		gameEnd = false;
 		
 		pauser = new PauseListener();
 		restarter = new RestartListener();
@@ -46,7 +54,7 @@ public class GameRunner {
 		
 		board.insertNextPiece();
 		
-		time = new Timer(timing, new timeRunner());
+		time = new Timer(currentTiming, new timeRunner());
 		time.start();
 	}
 	
@@ -63,7 +71,7 @@ public class GameRunner {
 	
 	public static void restart() {
 		
-		//** Ask if they are sure
+		currentTiming = timing;
 		
 		board.setVisible(false);
 		pause();
@@ -82,7 +90,17 @@ public class GameRunner {
 	
 	public static void quit() {
 		
-		//** Ask if they are sure
+		paused = false;
+		pause();
+		
+		if (!gameEnd) {
+			// ask if they want to continue
+			int ready = JOptionPane.showConfirmDialog(board,  "Are you sure you want to quit?");
+			if (ready == JOptionPane.NO_OPTION || ready == JOptionPane.CANCEL_OPTION) {
+				pause();
+				return;
+			}
+		}
 		
 		System.out.println("Quitting...");
 		System.exit(0);
@@ -94,7 +112,8 @@ public class GameRunner {
 		if (command == 1) board.rotate();
 		else if (command == 2) board.moveLeft();
 		else if (command == 3) board.moveRight();
-		else if (command == 4) drop();
+		//else if (command == 4) drop();
+		else if (command == 4) board.movePieceDown();
 	}
 	
 	private static void drop() {
@@ -114,5 +133,19 @@ public class GameRunner {
 				dropped = false;
 			}
 		}
+	}
+	
+	public static void speedUp() {
+		double timingDouble = (double) currentTiming;
+		timingDouble *= speedMultiplier;
+		currentTiming = (int) timingDouble;
+		time = new Timer(currentTiming, new timeRunner());
+		time.start();
+	}
+	
+	public static void gameOver() {
+		pause();
+		gameEnd = true;
+		board.gameOver();
 	}
 }

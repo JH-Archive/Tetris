@@ -7,6 +7,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import Game.GameRunner;
+
 public class InfoPanel extends JPanel {
 	
 	/*
@@ -21,14 +23,15 @@ public class InfoPanel extends JPanel {
 	 */
 	
 	// score labels
-	private int score;
-	private int highScore;
+	private static int score;
+	private static int highScore;
+	private final static int speedMultiple = 100;
 	
-	private JLabel scoreLabel;
-	private JLabel highScoreLabel;
+	private static JLabel scoreLabel;
+	private static JLabel highScoreLabel;
 	
-	private final String scoreString = "Current Score: ";
-	private final String highString = "High Score: ";
+	private static final String scoreString = "Current Score: ";
+	private static final String highString = "High Score: ";
 	
 	// labels
 	private final JLabel controlsLabel = new JLabel("Controls:");
@@ -42,7 +45,7 @@ public class InfoPanel extends JPanel {
 	public InfoPanel(int highScore) {
 		
 		// instantiate scores at beginning
-		score = 0;
+		score = -1;
 		this.highScore = highScore;
 		
 		// create score JLabels
@@ -75,7 +78,7 @@ public class InfoPanel extends JPanel {
 		return textArea;
 	}
 	
-	public void incrementScore() {
+	public static void incrementScore() {
 		// increment score
 		score++;
 		
@@ -86,13 +89,21 @@ public class InfoPanel extends JPanel {
 		}
 		
 		// change score label text
-		scoreLabel.setText(scoreLabel + Integer.toString(score));
+		scoreLabel.setText(scoreString + Integer.toString(score));
 		
-		repaint();
+		// if a multiple of 100, speed up
+		if (score % speedMultiple == 0 && score > 0) {
+			GameRunner.speedUp();
+		}
+		
+		//repaint();
 	}
 	
 	public int getHighScore() {
 		return highScore;
 	}
-
+	
+	public int getScore() {
+		return score;
+	}
 }

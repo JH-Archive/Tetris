@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import Game.Direction;
+import Game.GameRunner;
 import Game.Location;
 import Game.Piece;
 
@@ -61,7 +62,9 @@ public class GamePanel extends JPanel {
 		for (int i = 0; i < 3; i++) {
 			Location cell = orientations[i];
 			colors[startY+cell.dx][startX+cell.dy] = piece.color; 
-		}		
+		}
+		
+		InfoPanel.incrementScore();
 		
 		repaint();
 	}
@@ -121,6 +124,14 @@ public class GamePanel extends JPanel {
 					y = currentY + piece.getPiece()[i].dy;
 					
 					colors[x][y] = newColor;
+				}
+				
+				// remove filled rows
+				filledRowRemover();
+				
+				// check if game over
+				if (gameOverChecker()) {
+					GameRunner.gameOver();
 				}
 				
 				// repaint
@@ -188,6 +199,41 @@ public class GamePanel extends JPanel {
 			}
 		}
 		return false;
+	}
+	
+	private boolean gameOverChecker() {
+		for (int i = 0; i < col; i++) {
+			if (colors[0][i] != defaultColor) return true;
+		}
+		return false;
+	}
+	
+	private void filledRowRemover() {
+		// for each row
+		for (int i = 0; i < row; i++) {
+			boolean filled = true;
+			
+			// for each column
+			for (int j = 0; j < col; j++) {
+				if (colors[i][j] == defaultColor) filled = false;
+			}
+			
+			if (filled) {
+				
+				// set each row to be the row above it
+				// starting at current row, and going to second row
+				for (int k = i; k > 0; k--) {
+					for (int l = 0; l < col; l++) {
+						colors[k][l] = colors[k-1][l];
+					}
+				}
+				
+				// set row 0 to be defaultColor
+				for (int l = 0; l < col; l++) {
+					colors[0][l] = defaultColor;
+				}
+			}
+		}
 	}
 	
 	private boolean moveIsLegal(Direction d) {
